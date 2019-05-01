@@ -1,6 +1,6 @@
 # Meross-Node-Red-Comm
 
-This flow is designed around a multi-ip configured host.  It uses one ip gatway to scan (Ping) for a meross device in config mode. When it find a device (response to 10.10.10.1) it sends packets to configure the device in terms of MQTT server, MQTT Port, WiFi SSID, WiFi Password, and the encription 'key' (used for ALL MQTT messages).  The parameters are all set in the'Meross System Parameters' node near the top center.  Credentials must be set for all MQTT nodes (purple).
+This flow is designed around a multi-ip configured host.  It uses one ip gatway to scan (Ping) for a meross device in config mode. When it find a device (response to 10.10.10.1) it sends packets to configure the device in terms of MQTT server, MQTT Port, WiFi SSID, WiFi Password, and the encription 'key' (used for ALL MQTT messages).  [The Ping node and the following 'In Pairing Mode' can be deleted and the manual input 'Manual Trigger Config' can be used to initiate the configuration] The parameters are all set in the'Meross System Parameters' node near the top center.  Credentials must be set for all MQTT nodes (purple).
 
 Known limitations: The flow was written to post messages without checking for acks or errors.  A simple debug monitor is provided to watch the device communications.  The initial version is written to only talk to a single meross device (Togglex without a array of objects).  A future version may address this ('Meross MQTT 'Togglex' Message Template' will have to be re-written as javascrfipt node as object arrays are a problem in mustache)
 
