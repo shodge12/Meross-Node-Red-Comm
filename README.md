@@ -13,9 +13,10 @@ To make the meross devices talk to a MQTT server, it must be configured to do TL
 Credits...
 This flow is largely based on information from https://github.com/albertogeniola (project MerossIot) and https://github.com/bytespider/Meross (Meross).
 
-Additional Help for Pi users.  On first connect with a new device, from a ssh execute the following to see all avail SSIDs...
+Additional Help for Pi users.  On first connect with a new device, from a ssh, execute the following to see all avail SSIDs...
 sudo iwlist wlan0 scan
-Find the 'Meross_xxxxxxx" SSID.  Run
+Find the 'Meross_xxxxxxx" SSID.  
+Then run:
 sudo raspi-config
 Change the networking configuration, select WiFi and use the SSID from above with no password.  The Pi will join the network and then auto config should run within 2 minutes.  Optionally, you can run the manual config.
 
