@@ -1,0 +1,1555 @@
+[
+    {
+        "id": "b846945c.efcba8",
+        "type": "tab",
+        "label": "Meross V2.00",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d03d0041.f274a",
+        "type": "ping",
+        "z": "b846945c.efcba8",
+        "name": "Ping 10.10.10.1",
+        "host": "10.10.10.1",
+        "timer": "120",
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "be91957f.bb6688"
+            ]
+        ]
+    },
+    {
+        "id": "d110698c.90d3d8",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Wi-Fi Set Post Message",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"messageId\": \"2\",\n        \"method\": \"SET\",\n        \"namespace\": \"Appliance.Config.Wifi\"\n    },\n    \"payload\": {\n        \"wifi\": {\n            \"ssid\": \"{{{flow.ssid}}}\",\n            \"password\": \"{{{flow.password}}}\"\n        }\n    }\n}",
+        "output": "json",
+        "x": 690,
+        "y": 300,
+        "wires": [
+            [
+                "8b84d89d.d9fbd8"
+            ]
+        ]
+    },
+    {
+        "id": "be91957f.bb6688",
+        "type": "switch",
+        "z": "b846945c.efcba8",
+        "name": "In Pairing mode?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "false",
+                "vt": "jsonata"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 330,
+        "y": 220,
+        "wires": [
+            [
+                "254d3096.74a9e"
+            ]
+        ]
+    },
+    {
+        "id": "254d3096.74a9e",
+        "type": "delay",
+        "z": "b846945c.efcba8",
+        "name": "Rate Limit",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 220,
+        "y": 300,
+        "wires": [
+            [
+                "e07b4af7.6ecaa8",
+                "654920cf.8e4c3"
+            ]
+        ]
+    },
+    {
+        "id": "e07b4af7.6ecaa8",
+        "type": "delay",
+        "z": "b846945c.efcba8",
+        "name": "Delay Second +5sec",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 420,
+        "y": 300,
+        "wires": [
+            [
+                "d110698c.90d3d8"
+            ]
+        ]
+    },
+    {
+        "id": "8b84d89d.d9fbd8",
+        "type": "http request",
+        "z": "b846945c.efcba8",
+        "name": "Config Post",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "http://10.10.10.1/config",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 790,
+        "y": 380,
+        "wires": [
+            [
+                "89b433c5.0d74b",
+                "c42d9cca.d1227"
+            ]
+        ]
+    },
+    {
+        "id": "89b433c5.0d74b",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "HTTP Response",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1160,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "654920cf.8e4c3",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "MQTT Set Post Message",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"messageId\": \"1\",\n        \"method\": \"SET\",\n        \"namespace\": \"Appliance.Config.Key\"\n    },\n    \"payload\": {\n        \"key\": {\n            \"gateway\": {\n                \"host\": \"{{{flow.MQTT_Address}}}\",\n                \"port\": \"{{{flow.MQTT_Port}}}\"\n            },\n            \"key\": \"{{{flow.key}}}\",\n            \"userId\": \"\"\n        }\n    }\n}",
+        "output": "json",
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [
+                "8b84d89d.d9fbd8"
+            ]
+        ]
+    },
+    {
+        "id": "891304cc.53b038",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "Manual Trigger Config",
+        "topic": "Msg",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 400,
+        "wires": [
+            [
+                "254d3096.74a9e"
+            ]
+        ]
+    },
+    {
+        "id": "68345b09.73dda4",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "Request Hardware Information while in Config Mode...",
+        "topic": "/payload",
+        "payload": "{\"header\":{\"messageId\":\"3\",\"method\":\"GET\",\"namespace\":\"Appliance.System.All\"},\"payload\":{}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 260,
+        "y": 440,
+        "wires": [
+            [
+                "8b84d89d.d9fbd8"
+            ]
+        ]
+    },
+    {
+        "id": "f5c89e29.e99a2",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "The Two Nodes to the left are to auto-config by a ping every 120 sec.",
+        "info": "",
+        "x": 740,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f80218cc.052438",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "The can be deleted and the manual trigger config below can be used...",
+        "info": "",
+        "x": 750,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "94d9af32.91846",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Hardware Information must be requested prior to config... (if desired)",
+        "info": "",
+        "x": 280,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7390e43f.233a2c",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "Automatically Initialize Variables...",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "25a50386.b2d15c"
+            ]
+        ]
+    },
+    {
+        "id": "25a50386.b2d15c",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "Meross System Parameters...",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Wireless_SSID",
+                "pt": "flow",
+                "to": "SomeWirelessSSID",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "Wireless_Network_Password",
+                "pt": "flow",
+                "to": "SomeWirelessKey",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "key",
+                "pt": "flow",
+                "to": "1",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "MQTT_Address",
+                "pt": "flow",
+                "to": "192.168.X.XX",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "MQTT_Port",
+                "pt": "flow",
+                "to": "2001",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "7d685857.3dc198"
+            ]
+        ]
+    },
+    {
+        "id": "7d685857.3dc198",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "Hash Network Credencials...",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ssid",
+                "pt": "flow",
+                "to": "$string($base64encode($flowContext(\"Wireless_SSID\")))",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "password",
+                "pt": "flow",
+                "to": "$string($base64encode($flowContext(\"Wireless_Network_Password\")))",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 120,
+        "wires": [
+            [
+                "88371128.4ed03"
+            ]
+        ]
+    },
+    {
+        "id": "bf0139cf.d99b88",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Set parameters for WiFi, MQTT, and encoding key in the 'Meross System Parameters' below...",
+        "info": "",
+        "x": 360,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "1e665db9.005412",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "This is a simple MQTT monitor - set to watch '/applicace/#' Note you must configure the server credentials on all MQTT nodes...",
+        "info": "",
+        "x": 480,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "c42d9cca.d1227",
+        "type": "switch",
+        "z": "b846945c.efcba8",
+        "name": "If WiFi Ack....",
+        "property": "payload.header.namespace",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Appliance.Config.Wifi",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 910,
+        "y": 440,
+        "wires": [
+            [
+                "787960de.4c2c8"
+            ]
+        ]
+    },
+    {
+        "id": "76a8b35a.4f95bc",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) Device On",
+        "topic": "",
+        "payload": "{\"onoff\":1,\"channel\":1,\"topic\":\"/appliance/1712281825467829030134298f151c4a/subscribe\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "60d767c9.258d58"
+            ]
+        ]
+    },
+    {
+        "id": "f23ca481.8167e8",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) Device Off",
+        "topic": "",
+        "payload": "{\"onoff\":0,\"channel\":0,\"topic\":\"/appliance/1712281825467829030134298f151c4a/subscribe\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 600,
+        "wires": [
+            [
+                "60d767c9.258d58"
+            ]
+        ]
+    },
+    {
+        "id": "60d767c9.258d58",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Meross MQTT 'Togglex' Message Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"from\": \"/HaPi/MQTT\",\n        \"messageId\": \"\",\n        \"method\": \"SET\",\n        \"namespace\": \"Appliance.Control.ToggleX\",\n        \"payloadVersion\": 1,\n        \"sign\": \"\",\n        \"timestamp\": 1\n    },\n    \"payload\": {\n        \"togglex\":{\n                \"channel\": {{{payload.channel}}},\n                \"onoff\": {{{payload.onoff}}}\n        }\n    },\n    \"temp\": {\n        \"topic\": \"{{{payload.topic}}}\"\n    }\n}\n",
+        "output": "json",
+        "x": 590,
+        "y": 600,
+        "wires": [
+            [
+                "e075e1ac.6ee66"
+            ]
+        ]
+    },
+    {
+        "id": "6913cff8.8777d",
+        "type": "mqtt out",
+        "z": "b846945c.efcba8",
+        "name": "MQTT Post Message",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "",
+        "x": 1160,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "a3379356.43479",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) Set Lumanance Level 10 ...",
+        "topic": "",
+        "payload": "{\"luminance\":10,\"channel\":0,\"topic\":\"/appliance/1812144891717229088234298f196791/subscribe\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 190,
+        "y": 720,
+        "wires": [
+            [
+                "b59d783.f082588"
+            ]
+        ]
+    },
+    {
+        "id": "b59d783.f082588",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Meross MQTT 'Light' Message Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"from\": \"/HaPi/MQTT\",\n        \"messageId\": \"\",\n        \"method\": \"SET\",\n        \"namespace\": \"Appliance.Control.Light\",\n        \"payloadVersion\": 1,\n        \"sign\": \"\",\n        \"timestamp\": 1\n    },\n    \"payload\": {\n        \"light\":{\n            \"capacity\":4,\n            \"channel\":0,\n            \"rgb\":-1,\n            \"temperature\":-1,\n            \"luminance\": {{{payload.luminance}}}\n         }\n    },\n    \"temp\": {\n        \"topic\": \"{{{payload.topic}}}\"\n    }\n}",
+        "output": "json",
+        "x": 580,
+        "y": 700,
+        "wires": [
+            [
+                "e075e1ac.6ee66"
+            ]
+        ]
+    },
+    {
+        "id": "3d0b832b.8e1c0c",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "Full Tx Message",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1160,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "e075e1ac.6ee66",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "Set MQTT Topic & Params",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload.temp.topic",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "qos",
+                "pt": "msg",
+                "to": "2",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "retain",
+                "pt": "msg",
+                "to": "false",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload.temp",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 940,
+        "y": 600,
+        "wires": [
+            [
+                "19c0dba.c267624"
+            ]
+        ]
+    },
+    {
+        "id": "19c0dba.c267624",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Add Time MessageId, and Signature...",
+        "func": "var date = new Date();\nvar timestamp = date.getTime();\n\nfunction randomString(length, chars) {\n    var result = '';\n    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];\n    return result;\n}\n\nvar MD5 = function(s) {\n    function L(k,d) { return(k<<d)|(k>>>(32-d))}\n    function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}\n    function r(d,F,k){return(d&F)|((~d)&k)}\n    function q(d,F,k){return(d&k)|(F&(~k))}\n    function p(d,F,k){return(d^F^k)}\n    function n(d,F,k){return(F^(d|(~k)))}\n    function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}\n    function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}\n    function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}\n    function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}\n    function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]| (G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}\n    function B(x){var k=\"\",F=\"\",G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F=\"0\"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}\n    function J(k){k=k.replace(/rn/g,\"n\");var d=\"\";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else{if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}\n    var i=B(Y)+B(X)+B(W)+B(V);\n    return i.toLowerCase()\n  };\n\nmsg.payload.header.timestamp = parseInt(timestamp/1000);\n\nvar rnd_string = randomString(16,'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');\n\nmsg.payload.header.messageId = MD5(rnd_string);\n\nmsg.payload.header.sign = MD5(msg.payload.header.messageId + flow.get(\"key\") + msg.payload.header.timestamp);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1010,
+        "y": 720,
+        "wires": [
+            [
+                "6913cff8.8777d",
+                "3d0b832b.8e1c0c"
+            ]
+        ]
+    },
+    {
+        "id": "a3818a85.2cab38",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "Get Device Info...",
+        "topic": "",
+        "payload": "None",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 840,
+        "wires": [
+            [
+                "8ae3f652.715c98",
+                "acb3310b.f5ff6",
+                "4d058ffd.a02a5"
+            ]
+        ]
+    },
+    {
+        "id": "8ae3f652.715c98",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Meross MQTT System.Debug Message Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"from\": \"{{{flow.subscribe}}}\",\n        \"messageId\": \"\",\n        \"method\": \"GET\",\n        \"namespace\": \"Appliance.System.Debug\",\n        \"payloadVersion\": 1,\n        \"sign\": \"\",\n        \"timestamp\": 1\n    },\n    \"payload\": {\n    }\n}\n",
+        "output": "json",
+        "x": 630,
+        "y": 880,
+        "wires": [
+            [
+                "e075e1ac.6ee66"
+            ]
+        ]
+    },
+    {
+        "id": "acb3310b.f5ff6",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Meross MQTT System.Ability Message Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"from\": \"{{{flow.subscribe}}}\",\n        \"messageId\": \"\",\n        \"method\": \"GET\",\n        \"namespace\": \"Appliance.System.Ability\",\n        \"payloadVersion\": 1,\n        \"sign\": \"\",\n        \"timestamp\": 1\n    },\n    \"payload\": {\n    }\n}\n",
+        "output": "json",
+        "x": 620,
+        "y": 840,
+        "wires": [
+            [
+                "e075e1ac.6ee66"
+            ]
+        ]
+    },
+    {
+        "id": "ba941d39.cefea",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) Set Lumanance Level 100 ...",
+        "topic": "",
+        "payload": "{\"luminance\":100,\"channel\":0,\"topic\":\"/appliance/1812144891717229088234298f196791/subscribe\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 200,
+        "y": 760,
+        "wires": [
+            [
+                "b59d783.f082588"
+            ]
+        ]
+    },
+    {
+        "id": "b74cb743.1fd3d8",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Version 2.00",
+        "info": "",
+        "x": 930,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "e94dcdc9.41751",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Auto Config...",
+        "info": "",
+        "x": 230,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e5853177.23445",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Homeseer (non-encrypted) Interface",
+        "info": "",
+        "x": 200,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "d71f61b7.d8174",
+        "type": "mqtt in",
+        "z": "b846945c.efcba8",
+        "name": "/cmnd/# Receiver",
+        "topic": "/cmnd/#",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "",
+        "x": 120,
+        "y": 1500,
+        "wires": [
+            [
+                "3413740d.de67ec",
+                "cd642bf5.57e418"
+            ]
+        ]
+    },
+    {
+        "id": "3413740d.de67ec",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1170,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "fa8a6033.117da",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Local Meross / MQTT Testbench...",
+        "info": "",
+        "x": 420,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "30ea15fd.b5e34a",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "In addition to monitoring, it is used for Monitoring Traffic and to forrrward to the Homeseer Status Driver...",
+        "info": "",
+        "x": 410,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "ce774c08.6042a",
+        "type": "link in",
+        "z": "b846945c.efcba8",
+        "name": "ToggleX",
+        "links": [
+            "3df75b29.163264"
+        ],
+        "x": 480,
+        "y": 640,
+        "wires": [
+            [
+                "60d767c9.258d58"
+            ]
+        ],
+        "l": true
+    },
+    {
+        "id": "67aa5733.073918",
+        "type": "link in",
+        "z": "b846945c.efcba8",
+        "name": "Light",
+        "links": [
+            "a0bb21f6.2b467"
+        ],
+        "x": 470,
+        "y": 740,
+        "wires": [
+            [
+                "b59d783.f082588"
+            ]
+        ],
+        "l": true
+    },
+    {
+        "id": "3df75b29.163264",
+        "type": "link out",
+        "z": "b846945c.efcba8",
+        "name": "ToggleX",
+        "links": [
+            "ce774c08.6042a",
+            "d1c91bde.87b6d8"
+        ],
+        "x": 1160,
+        "y": 1460,
+        "wires": [],
+        "l": true
+    },
+    {
+        "id": "a0bb21f6.2b467",
+        "type": "link out",
+        "z": "b846945c.efcba8",
+        "name": "Light",
+        "links": [
+            "67aa5733.073918",
+            "b45776f4.0644b8"
+        ],
+        "x": 1170,
+        "y": 1520,
+        "wires": [],
+        "l": true
+    },
+    {
+        "id": "cbfed0ad.99cb2",
+        "type": "mqtt in",
+        "z": "b846945c.efcba8",
+        "name": "Watch Light",
+        "topic": "/appliance/#",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "",
+        "x": 110,
+        "y": 1120,
+        "wires": [
+            [
+                "b23c8c1.c0f447",
+                "d2867fe1.ef7bb"
+            ]
+        ]
+    },
+    {
+        "id": "b23c8c1.c0f447",
+        "type": "switch",
+        "z": "b846945c.efcba8",
+        "name": "Push Message",
+        "property": "payload.header.method",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "PUSH",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 300,
+        "y": 1120,
+        "wires": [
+            [
+                "cc3e999.305f468",
+                "ce034de4.cfcd5"
+            ]
+        ]
+    },
+    {
+        "id": "cc3e999.305f468",
+        "type": "switch",
+        "z": "b846945c.efcba8",
+        "name": "Appliance.Control Parse",
+        "property": "payload.header.namespace",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Appliance.Control.Light",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Appliance.Control.ToggleX",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 550,
+        "y": 1120,
+        "wires": [
+            [
+                "f5973dfc.f1b58"
+            ],
+            [
+                "46e11184.3e87f"
+            ]
+        ],
+        "outputLabels": [
+            "Light",
+            "ToggleX"
+        ]
+    },
+    {
+        "id": "795528fd.f0bf78",
+        "type": "mqtt out",
+        "z": "b846945c.efcba8",
+        "name": "Homeseer Status Post...",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "broker": "",
+        "x": 1170,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "ca26697f.96ff28",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1190,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "4d058ffd.a02a5",
+        "type": "template",
+        "z": "b846945c.efcba8",
+        "name": "Meross MQTT System.All Message Template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{\n    \"header\": {\n        \"from\": \"{{{flow.subscribe}}}\",\n        \"messageId\": \"\",\n        \"method\": \"GET\",\n        \"namespace\": \"Appliance.System.All\",\n        \"payloadVersion\": 1,\n        \"sign\": \"\",\n        \"timestamp\": 1\n    },\n    \"payload\": {\n    }\n}\n",
+        "output": "json",
+        "x": 610,
+        "y": 800,
+        "wires": [
+            [
+                "e075e1ac.6ee66"
+            ]
+        ]
+    },
+    {
+        "id": "46e11184.3e87f",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Create Homeseer POWER Message(s)... ",
+        "func": "var message = {\n        \"topic\": msg.topic,\n        \"qos\": msg.qos,\n        \"retain\": msg.retain,\n        \"payload\": {}\n};\n\n\nif (!Array.isArray(msg.payload.payload.togglex))\n{\n    var pl      = {\n        \"device\": \"\",\n        \"onoff\": 0\n        };\n    message.payload=[]\n    pl.device = msg.topic.slice(38,43)+'0'+msg.payload.payload.togglex.channel;\n    pl.onoff = msg.payload.payload.togglex.onoff;\n    message.payload.push(pl);\n}\nelse\n{\n    message.payload=[];\n    for(var i = 0; i < msg.payload.payload.togglex.length; i++) {\n        var payload      = {\n            \"device\": \"\",\n            \"onoff\": \"Off\"\n        };\n        payload.device = msg.topic.slice(38,43)+'0'+msg.payload.payload.togglex[i].channel;\n        payload.onoff = msg.payload.payload.togglex[i].onoff;\n//        if (msg.payload.payload.togglex[i].onoff === 0)\n//            {\n//                payload.onoff = \"Off\";\n//            }\n//        else\n//            {\n//                payload.onoff = \"On\";\n//            }\n        message.payload.push(payload);\n    }\n}\n\nreturn message;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 1200,
+        "wires": [
+            [
+                "24626de6.f6d0f2"
+            ]
+        ]
+    },
+    {
+        "id": "f5973dfc.f1b58",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Create Homeseer DIM Message(s)... ",
+        "func": "var message = {\n        \"topic\": msg.topic,\n        \"qos\": msg.qos,\n        \"retain\": msg.retain,\n        \"payload\": []\n};\n\nvar pl     = {\n        \"device\": \"\",\n        \"dim\": 0\n};\n\npl.device = msg.topic.slice(38,43)+'0'+msg.payload.payload.light.channel;\npl.dim = msg.payload.payload.light.luminance;\nmessage.payload.push(pl);\n\nreturn message;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 1060,
+        "wires": [
+            [
+                "6050224.31d0ddc"
+            ]
+        ]
+    },
+    {
+        "id": "c6f47eeb.3d21a",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "Set MQTT POWER Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "\"/stat/\" & payload.device & \"/POWER\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "delete",
+                "p": "parts",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 1200,
+        "wires": [
+            [
+                "795528fd.f0bf78",
+                "ca26697f.96ff28"
+            ]
+        ]
+    },
+    {
+        "id": "d16a9dc4.4224",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "Set MQTT DIM Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "\"/stat/\" & payload.device & \"/DIM\"",
+                "tot": "jsonata"
+            },
+            {
+                "t": "delete",
+                "p": "parts",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1060,
+        "wires": [
+            [
+                "795528fd.f0bf78",
+                "ca26697f.96ff28"
+            ]
+        ]
+    },
+    {
+        "id": "6050224.31d0ddc",
+        "type": "split",
+        "z": "b846945c.efcba8",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": true,
+        "addname": "",
+        "x": 750,
+        "y": 1060,
+        "wires": [
+            [
+                "d16a9dc4.4224"
+            ]
+        ]
+    },
+    {
+        "id": "24626de6.f6d0f2",
+        "type": "split",
+        "z": "b846945c.efcba8",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": "1",
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 750,
+        "y": 1200,
+        "wires": [
+            [
+                "c6f47eeb.3d21a"
+            ]
+        ]
+    },
+    {
+        "id": "d2867fe1.ef7bb",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 210,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "49c0f4bd.9acacc",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "This is the Homseer Driver Status Interface...",
+        "info": "",
+        "x": 530,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "476934dd.025bbc",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Devices are truncated to the least significant 5 digits & 0 & channel",
+        "info": "",
+        "x": 980,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "ae840f40.ad0cb",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Topics = Devices...",
+        "info": "",
+        "x": 850,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "92c9b4f6.b72da8",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) Device Off",
+        "topic": "",
+        "payload": "{\"onoff\":0,\"channel\":0,\"topic\":\"/appliance/1812144891717229088234298f196791/subscribe\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 680,
+        "wires": [
+            [
+                "60d767c9.258d58"
+            ]
+        ]
+    },
+    {
+        "id": "ce034de4.cfcd5",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Process IDs...",
+        "func": "var ids = [];\nvar status = {};\nids = flow.get(\"ids\") || [];\n\nvar getid = ids.find(idloop => idloop.longID === msg.payload.header.from.slice(11,43));\n\nif (!getid)\n{\nvar id = {\n    \"longID\": msg.payload.header.from.slice(11,43),\n    \"shortID\": msg.payload.header.from.slice(38,43)+\"00\"\n    };\n\nids.push(id);\nflow.set(\"ids\",ids);\n//status.payload = {\"status\":\"Added ID\"};\n}\nstatus.payload = JSON.stringify(ids);\nreturn status;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 280,
+        "y": 1240,
+        "wires": [
+            [
+                "c7ea4df1.e1184",
+                "54af7c11.76a724"
+            ]
+        ]
+    },
+    {
+        "id": "54af7c11.76a724",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "ID Processing...",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 500,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "6a6cbde2.1715e4",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "Clear vars in flow...",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 150,
+        "y": 1900,
+        "wires": [
+            [
+                "e30801bb.b4b66"
+            ]
+        ]
+    },
+    {
+        "id": "e30801bb.b4b66",
+        "type": "change",
+        "z": "b846945c.efcba8",
+        "name": "ids,test,tmp = null",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "ids",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "test",
+                "pt": "flow"
+            },
+            {
+                "t": "delete",
+                "p": "tmp",
+                "pt": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 1900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dc36d2aa.c81e2",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Debug Routines",
+        "info": "",
+        "x": 120,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "c7ea4df1.e1184",
+        "type": "file",
+        "z": "b846945c.efcba8",
+        "name": "Hard Store IDs...",
+        "filename": "meross_ids.json",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 510,
+        "y": 1240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88371128.4ed03",
+        "type": "file in",
+        "z": "b846945c.efcba8",
+        "name": "Read IDs Database...",
+        "filename": "meross_ids.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 1000,
+        "y": 120,
+        "wires": [
+            [
+                "cb34497f.b84aa8"
+            ]
+        ]
+    },
+    {
+        "id": "fcc2dd66.428a1",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "File Contents...",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1160,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "cb34497f.b84aa8",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Load IDs Database...",
+        "func": "\nvar newmsg = {};\nvar test = [];\n\ntest.push(JSON.parse(msg.payload)); //converts to a regular object\n\n//node.warn(test);\n\nmsg.payload=null;\nmsg.payload=test[0];\n\nflow.set(\"ids\",test[0]);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1100,
+        "y": 160,
+        "wires": [
+            [
+                "fcc2dd66.428a1"
+            ]
+        ]
+    },
+    {
+        "id": "cd642bf5.57e418",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Process IDs...",
+        "func": "var ids = [];\nids = flow.get(\"ids\");\nvar newmsg = {};\nvar payload = {};\nvar dim_off = {};\nvar cmd = 0;\nvar short_topic= msg.topic.split(\"/\")[2];\n\n//node.warn(short_topic);\n//node.warn(msg.topic);\n//node.warn(ids);\n\nvar getid = ids.find(idloop => idloop.shortID.slice(0,5) === short_topic.slice(0,5));\n\n//node.warn(getid);\n//node.warn(getid.longID);\n\ndim_msg = null;\n\ndim_off = {\n            \"topic\": \"\",\n            \"qos\": 2,\n            \"retain\": false,\n            \"payload\": \n                {\n                \"payload\":\n                    {\n                    \"light\":\n                        {\n                        \"channel\": 0,\n                        \"luminance\": 0\n                        }\n                    }\n                }\n            };\n\n\nif (getid)\n{\n    if (\"onoff\" in msg.payload)\n        {\n        payload.onoff = msg.payload.onoff;\n        cmd = 1;\n        }\n    else if (\"dim\" in msg.payload)\n        {\n        if (!isNaN(msg.payload.dim))\n            {\n//          Zero = Off & no dim\n            if (msg.payload.dim === 0)\n                {\n                payload.onoff = 0;\n                cmd = 1;\n                dim_off.topic = \"/appliance/\" + getid.longID + \"/publish\";\n                dim_off.payload.payload.light.channel = parseInt(short_topic.slice(6,7),10);\n                dim_msg=dim_off;\n                }\n//          100% is on & no dim\n            else if (msg.payload.dim === 100)\n                {\n                payload.onoff = 1;\n                cmd = 1;\n                }\n            else\n                {\n                payload.luminance = msg.payload.dim;\n                cmd = 2;\n                }\n            }\n        }\n    payload.topic = '/appliance/' + getid.longID + '/subscribe';\n    payload.channel = short_topic.slice(6,7);\n    newmsg.payload = payload;\n}\n\n//node.warn(cmd);\n//node.warn(newmsg);\n\nif (cmd)\n{\n    if (cmd==1)\n        {\n        return [newmsg, null, dim_msg];\n        }\n    else if (cmd==2)\n        {\n        return [null, newmsg, dim_msg];\n        }\n    else\n        {\n        return [null, null, dim_msg];        \n        }\n}\nelse\n{\n        return [null, null, null];        \n}\n",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 780,
+        "y": 1500,
+        "wires": [
+            [
+                "e742dbc2.3e31c8",
+                "3df75b29.163264"
+            ],
+            [
+                "a0bb21f6.2b467",
+                "e742dbc2.3e31c8"
+            ],
+            [
+                "58cd5989.df8098"
+            ]
+        ],
+        "outputLabels": [
+            "Togglex",
+            "Light",
+            ""
+        ]
+    },
+    {
+        "id": "e742dbc2.3e31c8",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "Rcvd_Cmd Debug",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1130,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "97e9a77c.069b18",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) MQTT CMD Device On",
+        "topic": "",
+        "payload": "{\"topic\":\"/cmnd/51c4a00/power\",\"payload\":{\"onoff\":1}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 180,
+        "y": 1560,
+        "wires": [
+            [
+                "4577fa6c.740544"
+            ]
+        ]
+    },
+    {
+        "id": "4577fa6c.740544",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Converter to RAW ToggleX MQTT packet",
+        "func": "var newmsg = {\n    \"topic\": msg.payload.topic,\n    \"payload\": {\n        \"onoff\": msg.payload.payload.onoff\n    }\n}\nreturn newmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 500,
+        "y": 1560,
+        "wires": [
+            [
+                "cd642bf5.57e418"
+            ]
+        ]
+    },
+    {
+        "id": "fd22a45f.7bfd78",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Process Mreross IDs - Make Short IDs - Save Database",
+        "info": "",
+        "x": 820,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "95bb305c.46a9c",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) MQTT CMD dim Level 10 ...",
+        "topic": "",
+        "payload": "{\"topic\":\"/cmnd/9679100/dim\",\"payload\":{\"dim\":10}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 200,
+        "y": 1740,
+        "wires": [
+            [
+                "cd383f4b.7606"
+            ]
+        ]
+    },
+    {
+        "id": "cd383f4b.7606",
+        "type": "function",
+        "z": "b846945c.efcba8",
+        "name": "Converter to RAW Dim MQTT packet",
+        "func": "var newmsg = {\n    \"topic\": msg.payload.topic,\n    \"payload\": {\n        \"dim\": msg.payload.payload.dim\n    }\n}\nreturn newmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 570,
+        "y": 1740,
+        "wires": [
+            [
+                "cd642bf5.57e418"
+            ]
+        ]
+    },
+    {
+        "id": "fb4d5147.a196f",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) MQTT CMD dim Level 100 (99) ...",
+        "topic": "",
+        "payload": "{\"topic\":\"/cmnd/9679100/dim\",\"payload\":{\"dim\":99}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 210,
+        "y": 1780,
+        "wires": [
+            [
+                "cd383f4b.7606"
+            ]
+        ]
+    },
+    {
+        "id": "3154b00f.12355",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) MQTT CMD Device Off",
+        "topic": "",
+        "payload": "{\"topic\":\"/cmnd/9679100/power\",\"payload\":{\"onoff\":0}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 180,
+        "y": 1700,
+        "wires": [
+            [
+                "4577fa6c.740544"
+            ]
+        ]
+    },
+    {
+        "id": "56c1b73a.59a528",
+        "type": "inject",
+        "z": "b846945c.efcba8",
+        "name": "(Test) MQTT CMD Device Off",
+        "topic": "",
+        "payload": "{\"topic\":\"/cmnd/51c4a00/power\",\"payload\":{\"onoff\":0}}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 180,
+        "y": 1600,
+        "wires": [
+            [
+                "4577fa6c.740544"
+            ]
+        ]
+    },
+    {
+        "id": "405a8e50.5f1ab",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "This translate simple cmds from MQTT to the Meross devices...",
+        "info": "",
+        "x": 290,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "787960de.4c2c8",
+        "type": "debug",
+        "z": "b846945c.efcba8",
+        "name": "WiFi ACK",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1180,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e42851b8.331df",
+        "type": "comment",
+        "z": "b846945c.efcba8",
+        "name": "Simple MQTT Traffic Simulator...",
+        "info": "",
+        "x": 490,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "58cd5989.df8098",
+        "type": "link out",
+        "z": "b846945c.efcba8",
+        "name": "Dim 0 Message Backdoor...",
+        "links": [
+            "54396dd2.643d94"
+        ],
+        "x": 1120,
+        "y": 1660,
+        "wires": [],
+        "l": true
+    },
+    {
+        "id": "54396dd2.643d94",
+        "type": "link in",
+        "z": "b846945c.efcba8",
+        "name": "Dim 0 Message Backdoor...",
+        "links": [
+            "58cd5989.df8098"
+        ],
+        "x": 180,
+        "y": 1060,
+        "wires": [
+            [
+                "f5973dfc.f1b58"
+            ]
+        ],
+        "l": true
+    }
+]
