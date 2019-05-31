@@ -13,6 +13,6 @@ V2.00 is a similar version to V3.00 but contains a logic error in the dim simula
 
 master is the original code which is a good starting point if you just want to learn to talk to the meross devices...
 
-A [Wiki](../../Wiki) will be setup for configuring the full Homeseer to Meross driver.
+A [Wiki](../../wiki) will be setup for configuring the full Homeseer to Meross driver.
 
 Previous versions of the README.md document how to get the master branch working...
